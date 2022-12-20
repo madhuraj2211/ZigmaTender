@@ -148,7 +148,7 @@ const ProjectstatusList = () => {
           <thead className="text-center">
             <tr>
               <th className="">Sl.No</th>
-              <th className="">Project Type</th>
+              <th className="">Project Status</th>
               <th className="">Status</th>
               <th className="">Action</th>
             </tr>

@@ -115,7 +115,7 @@ const CustomerCreationContactPerson = () => {
         buttons:`<i class="fa fa-edit text-primary mx-2 h6" style="cursor:pointer" title="Edit"></i> <i class="fa fa-trash text-danger h6  mx-2" style="cursor:pointer"  title="Delete"></i>`,
         sl_no : index+1
       }))
-
+      console.log(listarr)
       setcontactlist(listarr)
     });
   }
@@ -381,17 +381,19 @@ const CustomerCreationContactPerson = () => {
             <div className="col-lg-12 d-flex justify-content-center">
               {!isEditbtn && 
               <button
-                className="btn btn-outline-primary rounded-pill px-4"
+                className={(!formIsValid) ?  "btn btn-outline-primary rounded-pill px-4" :  "btn btn-primary rounded-pill px-4"} 
                 disabled={!formIsValid || isDatasending}
               >
+                {isDatasending && <span className="spinner-border spinner-border-sm mr-2"></span> }
                 {isDatasending && 'Saving...'}
                 {!isDatasending && 'Add'}
               </button>}
               {isEditbtn && 
                <button
-                className="btn btn-outline-primary rounded-pill px-4"
+                className={(!formIsValid) ?  "btn btn-outline-primary rounded-pill px-4" :  "btn btn-primary rounded-pill px-4"} 
                 disabled={!formIsValid || isDatasending}
               >
+                {isDatasending && <span className="spinner-border spinner-border-sm mr-2"></span> }
                 {isDatasending && 'Updating...'}
                 {!isDatasending && 'Update'}
               </button>  }  
@@ -405,11 +407,13 @@ const CustomerCreationContactPerson = () => {
         <div className = "col-lg-12 mt-3 d-flex justify-content-end">
           <button
               className="btn btn-outline-primary mr-3 rounded-pill"
+              onClick = {() => navigate("/tender/master/customercreation/list/main/swmprojectstatus/"+id)}
             >
             Next
           </button>
           <button className="btn  btn-outline-dark rounded-pill"
             onClick = {() => navigate("/tender/master/customercreation/list")}
+            
             >
               Cancel
           </button>

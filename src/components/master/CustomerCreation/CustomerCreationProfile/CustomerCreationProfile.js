@@ -52,7 +52,7 @@ const CustomerCreationProfile = () => {
   const [CityOptions, setCityoptions] = useState(initialOptions);
   const [GstNoDisable, setGstNoDisable] = useState(false);
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [addresslen, setaddresslength] =  useState(255);
   const [savedData, setSavedData] =useState({})
   const [isRendered, setIsrendered] = useState(false)
@@ -336,6 +336,7 @@ const CustomerCreationProfile = () => {
     }else{
       getCountryListOptions();
       getCustomerSubCategoryList();
+      setLoading(false)
     }
     // getCustCreationMainId()
     // getProfileFormData();
@@ -1333,21 +1334,23 @@ const CustomerCreationProfile = () => {
           
           <div className="col-lg-12">
             {!id && <button
-              className="btn btn-outline-primary float-right"
+             className={(!formIsValid) ?  "btn btn-outline-primary float-right rounded-pill" :  "btn btn-primary float-right rounded-pill"} 
               disabled={!formIsValid || isdatasending}
             >
+              {isdatasending && <span className="spinner-border spinner-border-sm mr-2"></span> }
               {isdatasending && "Saving..."}
               {!isdatasending && "Save & Continue"}
             </button>}
             {id && 
               <button
-              className="btn btn-outline-primary float-right"
-              disabled={!formIsValid || isdatasending}
+              className={(!formIsValid) ?  "btn btn-outline-primary float-right rounded-pill" :  "btn btn-primary float-right rounded-pill"} 
+              disabled = {!formIsValid || isdatasending}
             >
+              {isdatasending && <span className="spinner-border spinner-border-sm mr-2"></span> }
               {isdatasending && "Updating..."}
               {!isdatasending && "Edit & Continue"}
               </button>}
-            <button className="btn  btn-outline-dark mr-3 float-right"
+            <button className="btn  btn-outline-dark mr-3 float-right rounded-pill"
             onClick = {() => navigate("/tender/master/customercreation/list")}
             >
               Cancel
