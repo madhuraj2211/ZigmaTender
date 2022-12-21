@@ -41,6 +41,11 @@ import CustSubCategView from "./components/master/CustomerSubCategory/CustSubCat
 import CustSubCategMaster from "./components/master/CustomerSubCategory/CustSubCategMaster";
 import ProjectstatusMaster from "./components/master/Projectstatus/ProjectstatusMaster";
 import CustomerCreationBankDetails from "./components/master/CustomerCreation/Bankdetails/CustomerCreationBankdetails";
+import BidmanagementMain from "./components/tender/Bidmanagement/BidmanagementMain";
+import BidCreationMain from "./components/tender/Bidmanagement/Bidcreation/BidCreationMain";
+import BidSubmission from "./components/tender/Bidmanagement/Bidsubmission/BidSubmission";
+import TenderStatus from "./components/tender/Bidmanagement/TenderStatus/TenderStatus";
+import Workorder from "./components/tender/Bidmanagement/Workorder/Workorder";
 
 function App() {
   const authCtx = useContext(AuthContext);
@@ -55,9 +60,18 @@ function App() {
             <Route path="tendertracker" element={<Tendertracker />} />
             <Route path="tendercreation" element={<Tendercreation />} />
             <Route path="legacystatement" element={<Legacystatement />} />
-            <Route path="bidmanagement" element={<Bidmanagement />} />
+            {/* <Route path="bidmanagement" element={<Bidmanagement />} /> */}
+            <Route path="bidmanagement">
+              <Route path="list" element={<Bidmanagement />}/>
+              <Route path="list/main" element={<BidmanagementMain />}>
+                <Route path="bidcreationmain" element={<BidCreationMain/>}/>
+                <Route path="bidsubmission" element={<BidSubmission/>}/>
+                <Route path="tenderstatus" element={<TenderStatus/>}/>
+                <Route path="workorder" element={<Workorder/>}/>
+              </Route>
+            </Route>
             <Route path="master">
-            <Route
+              <Route
                 path="customercreation/list"
                 element={<CustomerCreation />}
               />

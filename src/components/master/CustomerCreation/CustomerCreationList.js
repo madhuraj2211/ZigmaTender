@@ -113,10 +113,13 @@ const [customerList, setCustomerlist] = useState([])
 
  return (
     <Fragment>
+      
+      <div className="Content-display">
+      {loading && <div className="loading">
+        <img id="loading-image" src="/assets/img/282.gif" alt="Loading..." />
+      </div> }
        <ToastContainer />
-        <div>
-          {loading && <Loader size="lg" backdrop content="Fetching Data..." />}
-        </div>
+        
         <div className="table-responsive pb-3">
         <table
           className="table text-center"
@@ -138,6 +141,7 @@ const [customerList, setCustomerlist] = useState([])
                 
           </tbody>
         </table>
+      </div>
       </div>
     </Fragment>
  );
