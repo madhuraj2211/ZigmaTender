@@ -1352,6 +1352,7 @@ const CustomerCreationProfile = () => {
               </button>}
             <button className="btn  btn-outline-dark mr-3 float-right rounded-pill"
             onClick = {() => navigate("/tender/master/customercreation/list")}
+            disabled ={isdatasending}
             >
               Cancel
             </button>

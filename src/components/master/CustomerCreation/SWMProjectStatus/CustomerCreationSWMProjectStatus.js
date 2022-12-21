@@ -176,10 +176,10 @@ const CustomerCreationSWMProjectStatus = () => {
           if(id){
            setCustomerCreationMainID(id)
            getsublist()
+           getProjectType()
+           getProjectStatus()
           }
 
-          getProjectType()
-          getProjectStatus()
       }, [])
 
       const postData = (data) => {
@@ -327,6 +327,8 @@ const CustomerCreationSWMProjectStatus = () => {
         resetdurationdate1()
         resetdurationdate2()
         resetvendorType()
+        setisEditbtn(false)
+        setProjectId(null)
     }
 
     const submitHandler = (event) => {
@@ -335,7 +337,7 @@ const CustomerCreationSWMProjectStatus = () => {
     
         if (!formIsValid) {
           console.log("Inavlid Form!");
-          setdatasending(true)
+          setdatasending(false)
           return;
         }
 
@@ -609,6 +611,13 @@ const CustomerCreationSWMProjectStatus = () => {
                 {isDatasending && 'Updating...'}
                 {!isDatasending && 'Update'}
               </button>  }  
+              <button
+                className="btn  btn-outline-dark rounded-pill mx-3"
+                onClick={resetform}
+                disabled={isDatasending}
+              >
+                Clear
+              </button>
             </div>
           </div>
         </form>

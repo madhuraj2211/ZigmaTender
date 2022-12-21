@@ -79,30 +79,11 @@ const CustomerCreationContactPerson = () => {
   useEffect(() => {
    if(id){
     setCustomerCreationMainID(id)
+    getsublist()
    }
-   getsublist()
   }, [])
 
-  useEffect(() => {
-    // const getCustCreationMainId = async () => {
-    //   let data = {tokenid: localStorage.getItem("token")}
-    //   let response = await axios.post(`${baseUrl}/api/customercreationmain/getmainid`, data);
-    //   setMainId(response.data.customercreation.id)
-    //   getsublist(response.data.customercreation.id)
-    // }
-
-    // const getFormNo = async () => {
-    //   let response = await axios.get(`${baseUrl}/api/customercreation/contact/getFormNo`);
-    //   setFormNo(response.data.form_no);
-    // }
-   
-    // getCustCreationMainId();
-    // getFormNo();
-  },[])
-
-  
-
-  const getsublist =() =>{
+   const getsublist =() =>{
     let data ={
       mainid : id,
     }
@@ -217,7 +198,7 @@ const CustomerCreationContactPerson = () => {
 
     if (!formIsValid) {
       console.log("Inavlid Form!");
-      setdatasending(true)
+      setdatasending(false)
       return;
     }
 
@@ -397,6 +378,14 @@ const CustomerCreationContactPerson = () => {
                 {isDatasending && 'Updating...'}
                 {!isDatasending && 'Update'}
               </button>  }  
+
+              <button
+                className="btn  btn-outline-dark rounded-pill mx-3"
+                onClick={resetform}
+                disabled={isDatasending}
+              >
+                Clear
+              </button>
             </div>
           </div>
         </form>

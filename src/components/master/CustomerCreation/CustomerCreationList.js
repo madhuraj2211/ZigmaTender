@@ -20,13 +20,15 @@ import axios from "axios";
 import { useBaseUrl } from "../../hooks/useBaseUrl";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
-
+import Swal from "sweetalert2";
+import { Loader } from "rsuite";
 let table ;
 
 
 
 const CustomerCreationList = ()  =>{
   const { server1: baseUrl } = useBaseUrl();
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
   const location = useLocation();
 const [customerList, setCustomerlist] = useState([])
@@ -53,27 +55,42 @@ const [customerList, setCustomerlist] = useState([])
     $('#dataTable tbody').on('click', 'tr .fa-trash-o', function () {
       let rowdata = table.row($(this).closest('tr')).data();
      
-      deleteList(rowdata.id)
+      deleteList(rowdata)
       // props.onDelete(rowdata)
     });
   }, [])
 
 
-  const deleteList = async (id) => {
-    let response =  await axios.delete(`${baseUrl}/api/customercreationprofile/${id}`);
-    if(response.data.status === 200){
-      getlist()
-      toast.success( response.data.message , {
-        position: toast.POSITION.TOP_CENTER
-      });
-    }else{
-      toast.error("Unable to Delete!" , {
-        position: toast.POSITION.TOP_CENTER
-      });
+  const deleteList = async (data) => {
+    Swal.fire({
+      text: `Are You sure, to delete records of ${data.customer_name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+      confirmButtonColor: '#2fba5f',
+      cancelButtonColor: '#fc5157'
+  }).then(async (willDelete) => {
+    if(willDelete.isConfirmed){
+      let response =  await axios.delete(`${baseUrl}/api/customercreationprofile/${data.id}`);
+      if(response.data.status === 200){
+        getlist()
+        toast.success( response.data.message , {
+          position: toast.POSITION.TOP_CENTER
+        });
+      }else{
+        toast.error("Unable to Delete!" , {
+          position: toast.POSITION.TOP_CENTER
+        });
+      }
     }
+  })
+
+
   }
 
   const getlist = async () => {
+    setLoading(true)
     let response =  await axios.get(`${baseUrl}/api/customercreationprofile`);
 
     let list = [...response.data.customercreationList];
@@ -84,6 +101,7 @@ const [customerList, setCustomerlist] = useState([])
          sl_no : index+1
        }))
         table.clear().rows.add(listarr).draw();
+        setLoading(false)
   }
 
   useEffect(() => {
@@ -96,6 +114,9 @@ const [customerList, setCustomerlist] = useState([])
  return (
     <Fragment>
        <ToastContainer />
+        <div>
+          {loading && <Loader size="lg" backdrop content="Fetching Data..." />}
+        </div>
         <div className="table-responsive pb-3">
         <table
           className="table text-center"

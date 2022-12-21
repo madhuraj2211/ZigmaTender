@@ -1,7 +1,13 @@
-import { Fragment, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router-dom"
 import { useBaseUrl } from "../../../hooks/useBaseUrl"
 import useInputValidation from "../../../hooks/useInputValidation"
+import { isIFSCvalid } from "../CommonValidation"
+import axios from "axios";
+import CustomerCreationBankDetailsubtable from "./CusromerCreationBankDetailsubtable";
+import Swal from "sweetalert2";
+
+
 
 const isNotEmpty = (value) => value.trim() !== "";
 const isEmail = (value) => value.includes("@");
@@ -15,7 +21,9 @@ const CustomerCreationBankDetails = () => {
     const { server1: baseUrl } = useBaseUrl();
     const [contactlist, setcontactlist] = useState(null)
     const [isEditbtn, setisEditbtn]= useState(false)
-    const [contactid, setcontactid]= useState(null);
+    const [bankid, setbankid]= useState(null);
+    const [addresslen, setaddresslength] =  useState(255);
+    const [banklist, setbanklist] = useState(null)
 
     const {
         value: banknameValue,
@@ -45,7 +53,7 @@ const CustomerCreationBankDetails = () => {
         inputBlurHandler: ifsccodeBlurHandler,
         setInputValue: setifsccodeValue,
         reset: resetifsccode,
-      } = useInputValidation(isNotEmpty);
+      } = useInputValidation(isIFSCvalid);
     
       const {
         value: beneficiaryaccountnameValue,
@@ -67,12 +75,181 @@ const CustomerCreationBankDetails = () => {
         reset: resetaccountnumber,
       } = useInputValidation(isNotEmpty);
 
+      useEffect(() => {
+        if(id){
+          setCustomerCreationMainID(id)
+          getsublist()
+        }
+      }, [])
+      
+
+      const getBank = async (e) => {
+        let ifsccode = e.target.value
+        let isValid = isIFSCvalid(ifsccode);
+        if(isValid){
+          let response = await axios.get(`https://ifsc.razorpay.com/${ifsccode}`) ;
+          if(response.status === 200){
+            setbanknameValue(response.data.BANK)
+            setbankaddressValue(response.data.ADDRESS)
+            validateInputLength(response.data.ADDRESS)
+          }
+        }else{
+          setbanknameValue("")
+          setbankaddressValue("")
+          validateInputLength("")
+        }
+      }
+
+      const validateInputLength = (value) => {
+        let maxLength =255;
+        setaddresslength(maxLength-value.length);  
+      }
+
       let formIsValid = false;
+
+      if (
+        banknameIsValid &&
+        bankaddressIsValid &&
+        ifsccodeIsValid &&
+        beneficiaryaccountnameIsValid &&
+        accountnumberIsValid 
+      ) {
+        formIsValid = true;
+      }
+    
 
       const submitHandler = (e) => {
         e.preventDefault();
+
+        setdatasending(true)
+
+        if (!formIsValid) {
+          console.log("Inavlid Form!");
+          setdatasending(false)
+          return;
+        }
+    
+        let bankdetails = {
+          ifsccode : ifsccodeValue,
+          bankname : banknameValue,
+          bankaddress : bankaddressValue,
+          beneficiaryaccountname : beneficiaryaccountnameValue,
+          accountnumber : accountnumberValue
+       }
+   
+        let datatosend ={
+          bankdetails,
+          tokenid : localStorage.getItem("token"),
+          cust_creation_mainid : id
+        }
+    
+        if(bankid === null){
+          postData(datatosend)
+        }else{
+          putData(datatosend)
+        }
+   
       }
 
+    const postData = (data) => {
+      axios.post(`${baseUrl}/api/customercreationbankdetails`, data).then((resp) => {
+        console.log(resp);
+        if (resp.data.status === 200) {
+          getsublist()
+          toastSuccess(resp.data.message)
+          resetform()
+          // navigate("/tender/master/customercreation/list/main/contactPerson");
+        } else if (resp.data.status === 400) {
+          toastError(resp.data.message)
+        }
+        setdatasending(false)
+      });
+    }
+
+    const putData = (data) => {
+      axios.put(`${baseUrl}/api/customercreationbankdetails/${bankid}`, data).then((resp) =>{
+        console.log(resp);
+        if (resp.data.status === 200) {
+          getsublist()
+          resetform()
+          toastSuccess(resp.data.message)
+        }else {
+          toastError("Something went wrong!")
+        }
+        setdatasending(false)
+      })
+    }
+
+    const getsublist = () => {
+      let data ={
+        mainid : id,
+      }
+  
+      axios.post(`${baseUrl}/api/customercreationbankdetails/getlist`, data).then((resp) => {
+        // console.log(resp)
+        let list = [...resp.data.bankdetails];
+        let listarr = list.map((item, index, arr)=> ({
+          ...item,
+          buttons:`<i class="fa fa-edit text-primary mx-2 h6" style="cursor:pointer" title="Edit"></i> <i class="fa fa-trash text-danger h6  mx-2" style="cursor:pointer"  title="Delete"></i>`,
+          sl_no : index+1
+        }))
+       
+        setbanklist(listarr)
+      });
+    }
+
+    const resetform = () => {
+      resetbankname();
+      resetbankaddress();
+      resetifsccode();
+      resetbeneficiaryaccountname();
+      resetaccountnumber();
+      setbankid(null)
+      setisEditbtn(false)
+    }
+
+    const onEdit =(data) => {
+      setisEditbtn(true)
+      setbankid(data.id)
+      setbanknameValue(data.bankname)
+      setbankaddressValue(data.bankaddress)
+      setifsccodeValue(data.ifsccode)
+      setbeneficiaryaccountnameValue(data.beneficiaryaccountname)
+      setaccountnumberValue(data.accountnumber)
+    }
+  
+    const onDelete = (data) => {
+      Swal.fire({
+        text: `Are You sure, to delete ${data.bankname} of ${data.beneficiaryaccountname}?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+        confirmButtonColor: '#2fba5f',
+        cancelButtonColor: '#fc5157'
+    }).then((willDelete) => {
+      if(willDelete.isConfirmed){
+        
+        axios.delete(`${baseUrl}/api/customercreationbankdetails/${data.id}`).then((resp) =>{
+          if (resp.data.status === 200) {
+            getsublist()
+            toastSuccess(resp.data.message)
+          }else if(resp.data.status === 404) {
+            toastError(resp.data.message)
+          }else{
+            toastError("Something went wrong!")
+          }
+        })
+      } else{
+        Swal.fire({
+            title: 'Cancelled',
+            icon:'error',
+            timer: 1500
+          });
+    }
+    })
+  
+    }
     return(
         <Fragment>
             <div className="formContent">
@@ -94,13 +271,13 @@ const CustomerCreationBankDetails = () => {
                     placeholder="Enter IFSC Code"
                     name="ifsccode"
                     value={ifsccodeValue}
-                    onChange={ifsccodeChangeHandler}
+                    onChange={(e) => {ifsccodeChangeHandler(e); getBank(e)}}
                     onBlur={ifsccodeBlurHandler}
                   />
                   {ifsccodeHasError && (
                     <div className="pt-1">
                       <span className="text-danger font-weight-normal">
-                        IFSC code is required.
+                        IFSC code is invalid.
                       </span>
                     </div>
                   )}
@@ -139,17 +316,17 @@ const CustomerCreationBankDetails = () => {
               <div className="row font-weight-bold">
                 <div className="col-lg-4 text-dark">
                   <label htmlFor="bankaddress">Bank address :</label>
-                  <p className="text-info font-weight-bold"><small><b>({255} Characters Remaining) </b></small></p> 
+                  <p className="text-info font-weight-bold"><small><b>({addresslen} Characters Remaining) </b></small></p> 
                 </div>
                 <div className="col-lg-8">
                   <textarea
                     type="text"
                     className="form-control"
-                    id="bankaddressname"
+                    id="bankaddress"
                     placeholder="Enter Bank Address"
-                    name="bankaddressname"
+                    name="bankaddress"
                     value={bankaddressValue}
-                    onChange={bankaddressChangeHandler}
+                    onChange={(e) => {bankaddressChangeHandler(e); validateInputLength(e.target.value)}}
                     onBlur={bankaddressBlurHandler}
                     rows="3"
                     maxLength="255"
@@ -236,12 +413,19 @@ const CustomerCreationBankDetails = () => {
                 {isDatasending && 'Updating...'}
                 {!isDatasending && 'Update'}
               </button>  }  
+              <button
+                className="btn  btn-outline-dark rounded-pill mx-3"
+                onClick={resetform}
+                disabled={isDatasending}
+              >
+                Clear
+              </button>
             </div>
           </div>
         </form>
 
         {/* <div className="col-lg-12 d-flex justify-content-center mt-4"> */}
-          {/* <CustomerCreationContactSubtable bankData = {contactlist} onEdit={onEdit} onDelete={onDelete}/> */}
+          <CustomerCreationBankDetailsubtable bankData = {banklist} onEdit={onEdit} onDelete={onDelete}/>
         {/* </div> */}
         <div className = "col-lg-12 mt-3 d-flex justify-content-end">
           {/* <button
@@ -252,7 +436,6 @@ const CustomerCreationBankDetails = () => {
           </button> */}
           <button className="btn  btn-outline-dark rounded-pill"
             onClick = {() => navigate("/tender/master/customercreation/list")}
-            
             >
               Cancel
           </button>
