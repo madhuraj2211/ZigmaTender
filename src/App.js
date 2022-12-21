@@ -23,7 +23,6 @@ import CompetitorBranch from "./components/master/CompetitorMaster/Competitor_De
 import CustomerCreationProfile from "./components/master/CustomerCreation/CustomerCreationProfile/CustomerCreationProfile";
 import CustomerCreationMain from "./components/master/CustomerCreation/CustomerCreationMain";
 import CustomerCreationContactPerson from "./components/master/CustomerCreation/CustomerCreationContactPerson/CustomerCreationContactperson";
-import CustomerCreationBankDetails from "./components/master/CustomerCreation/CustomerCreationBankdetails";
 import CustomerCreationSWMProjectStatus from "./components/master/CustomerCreation/SWMProjectStatus/CustomerCreationSWMProjectStatus";
 import StateMasterView from "./components/master/StateMaster/StateMasterView";
 import CountryMasterView from "./components/master/CountryMaster/CountryMasterView";
@@ -41,6 +40,7 @@ import ProejctTypeMaster from "./components/master/ProjectType/ProjectTypeMaster
 import CustSubCategView from "./components/master/CustomerSubCategory/CustSubCategView";
 import CustSubCategMaster from "./components/master/CustomerSubCategory/CustSubCategMaster";
 import ProjectstatusMaster from "./components/master/Projectstatus/ProjectstatusMaster";
+import CustomerCreationBankDetails from "./components/master/CustomerCreation/Bankdetails/CustomerCreationBankdetails";
 
 function App() {
   const authCtx = useContext(AuthContext);
@@ -89,7 +89,7 @@ function App() {
                 />
                 <Route
                   path="bankdetails/:id"
-                  element={<CustomerCreationBankDetails />}
+                  element={<CustomerCreationBankDetails  />}
                 />
                 <Route
                   path="swmprojectstatus"
