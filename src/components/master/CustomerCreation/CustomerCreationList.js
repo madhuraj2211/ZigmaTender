@@ -44,6 +44,12 @@ const [customerList, setCustomerlist] = useState([])
             { data: 'customer_group' },
             { data: 'buttons' },
         ],
+        dom:
+        //   "<'row'<'col-sm-12'l>>" +
+          "<'row'<'col-sm-12   col-md-6 pl-4'l>  <'col-sm-12 col-md-6 pr-4'f>>" +
+          "<'row'<'col-sm-12'tr>>" +
+          "<'row'<'col-sm-12 col-md-5 pl-4'i><'col-sm-12 col-md-7 pr-4'p>>",
+
     })
 
     $('#dataTable tbody').on('click', 'tr .fa-edit', function () {
