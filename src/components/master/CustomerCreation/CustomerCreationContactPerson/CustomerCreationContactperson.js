@@ -346,7 +346,7 @@ const CustomerCreationContactPerson = () => {
                     value={mobileValue}
                     onChange={mobileChangeHandler}
                     onBlur={mobileBlurHandler}
-                    onKeyPress={ isNumber}
+                    onKeyDown={ isNumber}
                     maxLength={10}
                     />
                   {mobileHasError && (

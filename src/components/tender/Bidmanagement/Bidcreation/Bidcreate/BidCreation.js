@@ -141,6 +141,25 @@ const BidCreation = () => {
     reset: resetquality,
   } = useInputValidation(isNotEmpty);
 
+  const {
+    value: projectperioddate1Value,
+    isValid: projectperioddate1IsValid,
+    hasError: projectperioddate1HasError,
+    valueChangeHandler: projectperioddate1ChangeHandler,
+    inputBlurHandler: projectperioddate1BlurHandler,
+    setInputValue: setprojectperioddate1Value,
+    reset: resetprojectperioddate1,
+  } = useInputValidation(isNotEmpty);
+
+  const {
+    value: projectperioddate2Value,
+    isValid: projectperioddate2IsValid,
+    hasError: projectperioddate2HasError,
+    valueChangeHandler: projectperioddate2ChangeHandler,
+    inputBlurHandler: projectperioddate2BlurHandler,
+    setInputValue: setprojectperioddate2Value,
+    reset: resetprojectperioddate2,
+  } = useInputValidation(isNotEmpty);
 
   const  getStateData =  async (savedState) => {
     let response = await axios.get(`${baseUrl}/api/state-list/${savedState}`)  
@@ -584,7 +603,7 @@ const BidCreation = () => {
           <div className="inputgroup col-lg-6 mb-4">
             <div className="row align-items-center">
               <div className="col-lg-4 text-dark font-weight-bold">
-                <label htmlFor="tenderevalutionsysytem">Tender Evalution System:</label>
+                <label htmlFor="tenderevalutionsysytem">Tender Evalution System :</label>
               </div>
               <div className="col-lg-8">
                 <div className="form-check form-check-inline mr-5">
@@ -626,7 +645,77 @@ const BidCreation = () => {
             
               </div>
             </div>
-          </div>       
+          </div> 
+          <div className="inputgroup col-lg-6 mb-4">
+              <div className="row align-items-center font-weight-bold">
+                <div className="col-lg-4 text-dark">
+                  <label htmlFor="projectperiod">
+                   Project Period :
+                  </label>
+                </div>
+                <div className="col-lg-8 ">
+                  <div className="col-lg-12 d-flex justify-content-between p-0">
+                  <input
+                    type="date"
+                    className="form-control col-md-6"
+                    id="projectperioddate1"
+                    placeholder="Enter Date"
+                    name="projectperioddate1"
+                    value={projectperioddate1Value}
+                    onChange={projectperioddate1ChangeHandler}
+                    onBlur={projectperioddate1BlurHandler}
+                  />
+                  &nbsp;
+                   <input
+                    type="date"
+                    className="form-control col-md-6"
+                    id="projectperioddate2"
+                    placeholder="Enter Date"
+                    name="projectperioddate2"
+                    value={projectperioddate2Value}
+                    onChange={projectperioddate2ChangeHandler}
+                    onBlur={projectperioddate2BlurHandler}
+                  />
+                  </div>
+                 
+                  {(projectperioddate1HasError || projectperioddate2HasError)  && (
+                    <div className="pt-1">
+                      <span className="text-danger font-weight-normal">
+                        projectperiod is required.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+          </div> 
+          {/* <div className="inputgroup col-lg-6 mb-4">
+              <div className="row align-items-center font-weight-bold">
+                <div className="col-lg-4 text-dark">
+                  <label htmlFor="estprojectvalue">Est. Project Value in Rs. :</label>
+                </div>
+                <div className="col-lg-8">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="estprojectvalue"
+                    placeholder="Enter Est. Project Value"
+                    name="estprojectvalue"
+                    value={estprojectvalueValue}
+                    onChange={estprojectvalueChangeHandler}
+                    onBlur={estprojectvalueBlurHandler}
+                    onKeyDown={ isNumber}
+                    maxLength={10}
+                    />
+                  {estprojectvalueHasError && (
+                    <div className="pt-1">
+                      <span className="text-danger font-weight-normal">
+                        Est Project value is invalid.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>      */}
         </div>
       </form>
     </CollapseCard>
