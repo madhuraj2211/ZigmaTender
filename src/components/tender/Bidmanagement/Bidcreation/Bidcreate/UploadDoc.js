@@ -31,7 +31,7 @@ const UploadDoc = () => {
         }
     }
 
-    console.log(fileList)    
+ 
     const {
         value: docnameValue,
         isValid: docnameIsValid,

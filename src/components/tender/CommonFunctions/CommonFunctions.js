@@ -1,4 +1,14 @@
-export const isNotEmpty = (value) => value.trim() !== "";
+// export const isNotEmpty = (value) => value.trim() !== "";
+
+export const isNotEmpty = (value) => {
+  if (value === null) {
+    return false;
+  } else if (value.trim() === "") {
+    return false;
+  }
+  return true;
+};
+
 export const isEmail = (value) => value.includes("@");
 export const isNotNull = (value) => {
   if (value === null) {
@@ -9,6 +19,11 @@ export const isNotNull = (value) => {
   return true;
 };
 
+export const isNumber = (evt) => {
+  if(!isFinite(evt.key) || evt.key == 8) {
+      evt.preventDefault();
+  }
+}
 
 export const isMobileValidation = (value) => {
     if (value === null) {

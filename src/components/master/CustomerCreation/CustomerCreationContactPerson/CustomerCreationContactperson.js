@@ -70,11 +70,14 @@ const CustomerCreationContactPerson = () => {
   } = useInputValidation(isMobileValidation);
 
 
-  const isNumber = (evt) => {
-      if(!isFinite(evt.key)) {
-          evt.preventDefault();
-      }
-  }
+  // const isNumber = (evt) => {
+  //   evt = (evt) ? evt : window.event;
+  //   var charCode = (evt.which) ? evt.which : evt.keyCode;
+  //   if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+  //       return false;
+  //   }
+  //   return true;
+  // }
 
   useEffect(() => {
    if(id){
@@ -338,7 +341,7 @@ const CustomerCreationContactPerson = () => {
                 </div>
                 <div className="col-lg-8">
                   <input
-                    type="text"
+                    type="number"
                     className="form-control"
                     id="mobile"
                     placeholder="Enter Mobile No"
@@ -346,7 +349,6 @@ const CustomerCreationContactPerson = () => {
                     value={mobileValue}
                     onChange={mobileChangeHandler}
                     onBlur={mobileBlurHandler}
-                    onKeyDown={ isNumber}
                     maxLength={10}
                     />
                   {mobileHasError && (

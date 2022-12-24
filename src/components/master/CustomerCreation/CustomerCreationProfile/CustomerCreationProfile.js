@@ -667,6 +667,7 @@ const CustomerCreationProfile = () => {
     setdatasending(true)
 
     if (!formIsValid) {
+      setdatasending(false)
       return;
     }
 
