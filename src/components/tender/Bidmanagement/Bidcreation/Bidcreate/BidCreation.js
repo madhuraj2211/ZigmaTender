@@ -6,6 +6,7 @@ import Select from "react-select";
 import axios from "axios";
 import { useBaseUrl } from "../../../../hooks/useBaseUrl";
 import '../../Bidmanagement.css'
+import UploadDoc from "./UploadDoc";
 
 const initialOptions = {
     options: [],
@@ -219,7 +220,6 @@ const BidCreation = () => {
             />
           </div>
         )}
-      </div>
       <form onSubmit={submitHandler}>
         <div className="row align-items-center ">
           <div className="inputgroup col-lg-6 mb-4">
@@ -718,6 +718,8 @@ const BidCreation = () => {
             </div>      */}
         </div>
       </form>
+      <UploadDoc/>
+      </div>
     </CollapseCard>
   );
 };
