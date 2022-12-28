@@ -5,7 +5,7 @@ import {  Outlet } from "react-router-dom";
 
 const BidmanagementMain = () => {
 
-    const[bidManageMainId, setbidManageMainId] = useState(0)
+    const[bidManageMainId, setBidManagementMainId] = useState(0)
     const toastSuccess = (text) => {
         toast.success( text , {
           position: toast.POSITION.TOP_CENTER
@@ -93,7 +93,7 @@ const BidmanagementMain = () => {
                           role="tabpanel"
                           aria-labelledby="home-tab"
                         >
-                          <Outlet context={[toastSuccess, toastError, setbidManageMainId, bidManageMainId ]}/>
+                          <Outlet context={[toastSuccess, toastError, setBidManagementMainId, bidManageMainId ]}/>
                         </div>
                         
                       </div>

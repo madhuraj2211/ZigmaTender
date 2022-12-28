@@ -634,11 +634,12 @@ const CustomerCreationProfile = () => {
 
   const postData = (data) => {
     axios.post(`${baseUrl}/api/customercreationprofile`, data).then((resp) => {
-      console.log(resp);
+      console.log(resp);  
       if (resp.data.status === 200) {
         setCustomerCreationMainID(resp.data.id)
         toastSuccess(resp.data.message)
         resetall()
+        window.history.replaceState({},"Customer Creation", "/tender/master/customercreation/list/main/profile/"+resp.data.id);
         navigate("/tender/master/customercreation/list/main/contactPerson/"+resp.data.id);
       } else if (resp.data.status === 400) {
         toastError(resp.data.message)

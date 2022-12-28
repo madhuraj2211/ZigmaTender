@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useInputValidation from "../../../../hooks/useInputValidation";
 import CollapseCard from "../../../../UI/CollapseCard";
 import {
@@ -10,7 +10,7 @@ import axios from "axios";
 import { useBaseUrl } from "../../../../hooks/useBaseUrl";
 import "../../Bidmanagement.css";
 import UploadDoc from "./UploadDoc";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const initialOptions = {
@@ -27,13 +27,16 @@ const BidCreation = () => {
   const [TenderDescriptionlen, setTenderDescriptionlen] = useState(255);
   const [unitValue, setunitValue] = useState("Cu.M");
   const [EMDValue, setEMDValue] = useState("nonexempted");
-  const [tenderevalutionsysytemValue, settenderevalutionsysytemValue] =
-    useState("QCBS");
+  const [tenderevalutionsysytemValue, settenderevalutionsysytemValue] = useState("QCBS");
   const [formId, setFormId] = useState(0);
   const { id } = useParams();
 
-  const navigate = useNavigate();
+  const myRef = useRef(null)    
 
+  const navigate = useNavigate();
+  const [toastSuccess, toastError, setBidManagementMainId, bidManageMainId ] = useOutletContext();
+
+  console.log(id)
   const {
     value: bidnoValue,
     isValid: bidnoIsValid,
@@ -283,6 +286,7 @@ const BidCreation = () => {
   useEffect(() => {
     getStateListOptions();
     getulbListOptions();
+
   }, []);
 
   const validateInputLength = (e) => {
@@ -298,6 +302,33 @@ const BidCreation = () => {
   };
   const tenderevalutionsysytemhandler = (e) => {
     settenderevalutionsysytemValue(e.target.value);
+  };
+
+
+  const postData = (data) => {
+    axios.post(`${baseUrl}/api/bidcreation/creation`, data).then((resp) => {
+      if (resp.data.status === 200) {
+        setBidManagementMainId(resp.data.id)
+        toastSuccess(resp.data.message)
+        // resetall()
+        navigate("/tender/bidmanagement/list/main/bidcreationmain/"+resp.data.id);
+        myRef.current.scrollIntoView({ behavior: 'smooth' })    
+        // window.history.replaceState({},"Bid Creation", "/tender/bidmanagement/list/main/bidcreationmain/"+resp.data.id);
+       
+
+      } else if (resp.data.status === 400) {
+        toastError(resp.data.message)
+      }
+      setdatasending(false)
+    }).catch((err) => {
+        // console.log(err.message)
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+          })
+          setdatasending(false)
+    });
   };
 
   let formIsValid = false;
@@ -374,7 +405,14 @@ const BidCreation = () => {
       form_id: formId,
     };
 
-    console.log(data);
+  
+
+    if(formId === 0){
+        postData(data);
+    }else if(formId > 0){
+        // putData(data)
+    }
+
     setdatasending(false);
   };
 
@@ -398,6 +436,9 @@ const BidCreation = () => {
       navigate("/tender/bidmanagement/list");
     }
   };
+
+  
+
 
   return (
     <CollapseCard id={"bidcreation"} title={"Bid Creation"}>
@@ -1185,8 +1226,10 @@ const BidCreation = () => {
             </div>
           </div>
         </form>
+        <div ref={myRef} >
         <UploadDoc />
       </div>
+        </div>
     </CollapseCard>
   );
 };

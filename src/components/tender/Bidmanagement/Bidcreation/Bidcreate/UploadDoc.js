@@ -1,15 +1,26 @@
 import { Fragment, useRef, useState } from "react"
+import { useOutletContext, useParams } from "react-router-dom";
 import useInputValidation from "../../../../hooks/useInputValidation";
 import { isNotEmpty } from "../../../CommonFunctions/CommonFunctions";
 import ReadyToUpload from "./ReadyToupload";
 import './UploadDoc.css'
+import Swal from "sweetalert2";
+import { useBaseUrl } from "../../../../hooks/useBaseUrl";
+import axios from "axios";
+import DocList from "./DocList";
 
 const UploadDoc = () => {
 
     const wrapperRef = useRef(null);
-
-    const [fileList, setFileList] = useState([]);
+    const [isDatasending, setdatasending] = useState(false);
+    const [isEditbtn, setisEditbtn]= useState(false)
+    const [UploadDocId, setUploadDocId]= useState(null);
+    const [file, setFile] = useState(null);
     const [dragover, setdragover] = useState(false);
+    const { id } = useParams();
+    const { server1: baseUrl } = useBaseUrl();
+    const [toastSuccess, toastError, setBidManagementMainId, bidManageMainId ] = useOutletContext();
+    const [progress, setProgressCompleted] = useState(0)
 
     const onDragEnter = () => {
         wrapperRef.current.classList.add('dragover')
@@ -26,8 +37,7 @@ const UploadDoc = () => {
     const onFileDrop = (e) => {
         const newFile = e.target.files[0];
         if (newFile) {
-            const updatedList = [...fileList, newFile];
-            setFileList(updatedList);
+            setFile(newFile);
         }
     }
 
@@ -42,9 +52,87 @@ const UploadDoc = () => {
         reset: resetdocname,
       } = useInputValidation(isNotEmpty);
 
+
+    var config = {
+        onUploadProgress: function(progressEvent) {
+          var percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+          setProgressCompleted(percentCompleted)
+        }
+
+    }
+
+      const resetform =() => {
+          resetdocname();
+          setFile(null)
+      }
+    
+      const postData = (data) => {
+        axios.post(`${baseUrl}/api/bidcreation/creation/docupload`, data, config).then((resp) => {
+            if (resp.data.status === 200) {
+              toastSuccess(resp.data.message)
+              // resetall()
+            //   navigate("/tender/bidmanagement/list/main/bidcreationmain/"+resp.data.id);
+            //   myRef.current.scrollIntoView({ behavior: 'smooth' })    
+              // window.history.replaceState({},"Bid Creation", "/tender/bidmanagement/list/main/bidcreationmain/"+resp.data.id);
+             
+      
+            } else if (resp.data.status === 400) {
+              toastError(resp.data.message)
+            }
+            setdatasending(false)
+          }).catch((err) => {
+              // console.log(err.message)
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Something went wrong!',
+                })
+                setdatasending(false)
+          });
+      }
+    
+    let formIsValid = false;
+    
+    if (
+        docnameIsValid &&
+        (file !== null)
+      ) {
+        formIsValid = true;
+      }
+    
+
     const submitHandler =(e) =>{
         e.preventDefault()
+
+        setdatasending(true);
+
+        if (!formIsValid) {
+        setdatasending(false);
+        return;
+        }
+
+        const formdata = new FormData();
+
+
+        let data = {
+            docname : docnameValue,
+            file : file,
+            tokenid: localStorage.getItem("token"),
+            bid_creation_mainid : id,
+        }
+
+        for ( var key in data ) {
+            formdata.append(key, data[key]);
+        }
+     
+
+        if(id && UploadDocId === null){
+            postData(formdata)
+        }
+      
     }  
+ 
+    console.log(file)
 
     return (
         <Fragment>
@@ -88,7 +176,7 @@ const UploadDoc = () => {
                 </label>
               </div>
                 <div  className="col-lg-8 text-dark mt-1">
-                 <ReadyToUpload docList = {fileList} />
+                 <ReadyToUpload file = {file} docName ={docnameValue}/>
                 </div>
             </div>
           </div>
@@ -112,8 +200,37 @@ const UploadDoc = () => {
               </div>
             </div>
           </div>
+          <div className="col-lg-12 d-flex justify-content-center">
+              {!isEditbtn && 
+              <button
+                className={(!formIsValid) ?  "btn btn-outline-primary rounded-pill px-4" :  "btn btn-primary rounded-pill px-4"} 
+                disabled={!formIsValid || isDatasending}
+              >
+                {isDatasending && <span className="spinner-border spinner-border-sm mr-2"></span> }
+                {isDatasending && progress+'% Uploaded'}
+                {!isDatasending && 'Add'}
+              </button>}
+              {isEditbtn && 
+               <button
+                className={(!formIsValid) ?  "btn btn-outline-primary rounded-pill px-4" :  "btn btn-primary rounded-pill px-4"} 
+                disabled={!formIsValid || isDatasending}
+              >
+                {isDatasending && <span className="spinner-border spinner-border-sm mr-2"></span> }
+                {isDatasending && 'Updating...'}
+                {!isDatasending && 'Update'}
+              </button>  }  
+
+              <button
+                className="btn  btn-outline-dark rounded-pill mx-3"
+                onClick={resetform}
+                disabled={isDatasending}
+              >
+                Clear
+              </button>
+            </div>
         </div>
-      </form>    
+      </form>
+         <DocList/>       
         </Fragment>
     )
 }
